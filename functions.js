@@ -1,3 +1,16 @@
+function getFocusableElements(container) {
+  if (!(container instanceof HTMLElement)) return [];
+  return Array.from(
+    container.querySelectorAll(
+      'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
+    )
+  ).filter(
+    (el) =>
+      el instanceof HTMLElement && !el.hasAttribute("disabled") && el.offsetParent !== null
+  );
+}
+
+/* runtime Only JS for smooth scrolling and active section highlighting */
 (() => {
   const prefersReducedMotion =
     typeof window !== "undefined" &&
@@ -24,6 +37,59 @@
     });
   }
 
+  const sectionIds = ["home", "about", "works"];
+  const navLinks = Array.from(document.querySelectorAll(".nav .navLink[data-scroll]")).filter((a) => {
+    const href = a.getAttribute("href") || "";
+    return sectionIds.some((id) => href === `#${id}`);
+  });
+
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter((el) => el instanceof HTMLElement);
+
+  function setNavAriaCurrentForSection(activeId) {
+    if (!sectionIds.includes(activeId)) return;
+    for (const link of navLinks) {
+      const isCurrent = link.getAttribute("href") === `#${activeId}`;
+      if (isCurrent) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
+  }
+
+  function updateActiveSectionFromScroll() {
+    if (!sections.length || !navLinks.length) return;
+
+    const scannerY = getHeaderOffset() + window.innerHeight * 0.25;
+    let activeId = sectionIds[0];
+
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (!(el instanceof HTMLElement)) continue;
+      const top = el.getBoundingClientRect().top;
+      if (top <= scannerY) activeId = id;
+    }
+
+    setNavAriaCurrentForSection(activeId);
+  }
+
+  let scrollSpyTicking = false;
+  function requestScrollSpyUpdate() {
+    if (!sections.length || !navLinks.length) return;
+    if (scrollSpyTicking) return;
+    scrollSpyTicking = true;
+    window.requestAnimationFrame(() => {
+      scrollSpyTicking = false;
+      updateActiveSectionFromScroll();
+    });
+  }
+
+  if (sections.length && navLinks.length) {
+    window.addEventListener("scroll", requestScrollSpyUpdate, { passive: true });
+    window.addEventListener("resize", requestScrollSpyUpdate);
+    window.addEventListener("load", requestScrollSpyUpdate);
+    requestScrollSpyUpdate();
+  }
+
   // Smooth scrolling for internal links
   document.addEventListener("click", (e) => {
     const a = e.target instanceof Element ? e.target.closest("a[data-scroll]") : null;
@@ -40,45 +106,12 @@
     if (!id) return;
 
     e.preventDefault();
+    if (sectionIds.includes(id)) setNavAriaCurrentForSection(id);
     smoothScrollToId(id);
   });
 
-  // Active nav state for sections
-  const sectionIds = ["home", "about", "works"];
-  const navLinks = Array.from(document.querySelectorAll(".nav .navLink[data-scroll]")).filter((a) => {
-    const href = a.getAttribute("href") || "";
-    return sectionIds.some((id) => href === `#${id}`);
-  });
-
-  const sections = sectionIds
-    .map((id) => document.getElementById(id))
-    .filter((el) => el instanceof HTMLElement);
-
-  if ("IntersectionObserver" in window && sections.length) {
-    const obs = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((x) => x.isIntersecting)
-          .sort((a, b) => (b.intersectionRatio || 0) - (a.intersectionRatio || 0))[0];
-        if (!visible?.target?.id) return;
-
-        for (const link of navLinks) {
-          const isCurrent = link.getAttribute("href") === `#${visible.target.id}`;
-          if (isCurrent) link.setAttribute("aria-current", "page");
-          else link.removeAttribute("aria-current");
-        }
-      },
-      {
-        root: null,
-        threshold: [0.2, 0.35, 0.5],
-      }
-    );
-
-    for (const s of sections) obs.observe(s);
-  }
-
-  // Works spotlight effect
-  const grid = document.querySelector(".worksGrid");
+  // Works spotlight: homepage #works grid only (not portfolio page)
+  const grid = document.querySelector("#works .worksGrid");
   if (!grid) return;
 
   let activeCard = null;
@@ -112,7 +145,6 @@
     activeCard = null;
   }
 
-  // Mobile View: tap to spotlight
   const isCoarsePointer =
     typeof window !== "undefined" &&
     window.matchMedia &&
@@ -120,12 +152,10 @@
 
   if (isCoarsePointer) {
     grid.addEventListener("pointerdown", (e) => {
-      // Don't block scroll; just toggle spotlight.
       const target = e.target instanceof Element ? e.target : null;
       const card = target ? target.closest(".workCard") : null;
       if (!(card instanceof HTMLElement)) return;
 
-      // Tap the same card to close.
       if (activeCard === card && document.body.classList.contains("spotlightOn")) {
         deactivate();
         return;
@@ -134,16 +164,14 @@
       activate(card);
     });
 
-    // Tap outside works grid to close spotlight
     document.addEventListener("pointerdown", (e) => {
       if (!document.body.classList.contains("spotlightOn")) return;
       const target = e.target instanceof Element ? e.target : null;
       if (!target) return;
-      if (target.closest(".worksGrid")) return;
+      if (target.closest("#works .worksGrid")) return;
       deactivate();
     });
 
-    // Hide spotlight if user starts scrolling.
     window.addEventListener(
       "scroll",
       () => {
@@ -177,7 +205,6 @@
 })();
 
 (() => {
-  // Contact form + modal (only on contact page)
   const form = document.getElementById("contactForm");
   const modal = document.getElementById("contactModal");
   if (!(form instanceof HTMLFormElement) || !(modal instanceof HTMLElement)) return;
@@ -214,14 +241,6 @@
     return ok;
   }
 
-  function getFocusable(container) {
-    return Array.from(
-      container.querySelectorAll(
-        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'
-      )
-    ).filter((el) => el instanceof HTMLElement && !el.hasAttribute("disabled") && el.offsetParent !== null);
-  }
-
   function openModal({ title, desc }) {
     lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     if (titleEl) titleEl.textContent = title;
@@ -230,7 +249,7 @@
     modal.classList.add("isOpen");
     modal.setAttribute("aria-hidden", "false");
 
-    const focusables = getFocusable(modal);
+    const focusables = getFocusableElements(modal);
     (focusables[0] || modal).focus?.();
   }
 
@@ -245,32 +264,6 @@
     const target = e.target instanceof Element ? e.target : null;
     if (!target) return;
     if (target.closest("[data-modal-close]")) closeModal();
-  });
-
-  document.addEventListener("keydown", (e) => {
-    if (!modal.classList.contains("isOpen")) return;
-
-    if (e.key === "Escape") {
-      e.preventDefault();
-      closeModal();
-      return;
-    }
-
-    if (e.key === "Tab") {
-      const focusables = getFocusable(modal);
-      if (!focusables.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
   });
 
   form.addEventListener("input", (e) => {
@@ -318,6 +311,224 @@
       });
     } finally {
       setSending(false);
+    }
+  });
+})();
+
+/* runtime Only JS for work detail modal */
+
+(() => {
+  const grid = document.querySelector(".portfolioGrid");
+  const modal = document.getElementById("workDetailModal");
+  const heroEl = document.getElementById("workDetailHero");
+  const titleEl = document.getElementById("workDetailTitle");
+  const metaEl = document.getElementById("workDetailMeta");
+  const descEl = document.getElementById("workDetailDesc");
+
+  if (!grid || !modal || !heroEl || !titleEl || !metaEl || !descEl) return;
+
+  const THUMB_CLASSES = ["thumbA", "thumbB", "thumbC", "thumbD", "thumbE", "thumbF"];
+
+  let lastFocused = null;
+
+  function stripThumbClasses(el) {
+    for (const c of THUMB_CLASSES) el.classList.remove(c);
+  }
+
+  function openWorkModal(card) {
+    if (!(card instanceof HTMLElement)) return;
+
+    const title = card.getAttribute("data-work-title") || "";
+    const meta = card.getAttribute("data-work-meta") || "";
+    const desc = card.getAttribute("data-work-desc") || "";
+    const thumb = card.getAttribute("data-work-thumb") || "thumbA";
+
+    lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    heroEl.className = "workDetailHero workThumb";
+    stripThumbClasses(heroEl);
+    if (THUMB_CLASSES.includes(thumb)) heroEl.classList.add(thumb);
+
+    titleEl.textContent = title;
+    metaEl.textContent = meta;
+    descEl.textContent = desc;
+
+    modal.classList.add("isOpen");
+    modal.setAttribute("aria-hidden", "false");
+    modal.scrollTop = 0;
+
+    const closeBtn = modal.querySelector(".workDetailClose[data-modal-close]");
+    if (closeBtn instanceof HTMLElement) {
+      closeBtn.focus();
+    } else {
+      const fallback = modal.querySelector("[data-modal-close]");
+      if (fallback instanceof HTMLElement) fallback.focus();
+    }
+  }
+
+  function closeWorkModal() {
+    modal.classList.remove("isOpen");
+    modal.setAttribute("aria-hidden", "true");
+    if (lastFocused) lastFocused.focus();
+    lastFocused = null;
+  }
+
+  grid.addEventListener("click", (e) => {
+    const card = e.target instanceof Element ? e.target.closest(".portfolioCard") : null;
+    if (!(card instanceof HTMLElement)) return;
+    openWorkModal(card);
+  });
+
+  grid.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    const card = e.target instanceof Element ? e.target.closest(".portfolioCard") : null;
+    if (!(card instanceof HTMLElement)) return;
+    e.preventDefault();
+    openWorkModal(card);
+  });
+
+  modal.addEventListener("click", (e) => {
+    const target = e.target instanceof Element ? e.target : null;
+    if (!target) return;
+    if (target.closest("[data-modal-close]")) closeWorkModal();
+  });
+})();
+
+/* runtime Only JS for mobile menu */
+(() => {
+  const mq = window.matchMedia("(max-width: 768px)");
+  const toggle = document.querySelector(".navToggle");
+  const nav = document.getElementById("primaryNav");
+  const backdrop = document.querySelector("[data-nav-backdrop]");
+  if (!toggle || !nav) return;
+
+  function isMobileNav() {
+    return mq.matches;
+  }
+
+  function isModalOpen() {
+    return Boolean(document.querySelector(".modal.isOpen"));
+  }
+
+  function setNavInertAndHidden(mobileClosed) {
+    if (!isMobileNav()) {
+      nav.removeAttribute("aria-hidden");
+      if ("inert" in nav) nav.inert = false;
+      return;
+    }
+    if (mobileClosed) {
+      nav.setAttribute("aria-hidden", "true");
+      if ("inert" in nav) nav.inert = true;
+    } else {
+      nav.setAttribute("aria-hidden", "false");
+      if ("inert" in nav) nav.inert = false;
+    }
+  }
+
+  function closeMenu() {
+    document.body.classList.remove("isNavOpen");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open menu");
+    document.body.style.overflow = "";
+    document.body.style.touchAction = "";
+    if (backdrop instanceof HTMLElement) {
+      backdrop.setAttribute("aria-hidden", "true");
+    }
+    setNavInertAndHidden(true);
+  }
+
+  function openMenu() {
+    document.body.classList.add("isNavOpen");
+    toggle.setAttribute("aria-expanded", "true");
+    toggle.setAttribute("aria-label", "Close menu");
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+    if (backdrop instanceof HTMLElement) {
+      backdrop.setAttribute("aria-hidden", "false");
+    }
+    setNavInertAndHidden(false);
+    const first = nav.querySelector("a");
+    if (first instanceof HTMLElement) {
+      window.requestAnimationFrame(() => first.focus());
+    }
+  }
+
+  function getHeaderFocusTrapOrder() {
+    const brand = document.querySelector(".headerInner .brand");
+    const links = Array.from(nav.querySelectorAll(".navLink"));
+    const ordered = [];
+    if (brand instanceof HTMLElement) ordered.push(brand);
+    ordered.push(toggle);
+    for (const a of links) {
+      if (a instanceof HTMLElement) ordered.push(a);
+    }
+    return ordered;
+  }
+
+  function syncBreakpoint() {
+    if (!isMobileNav()) {
+      closeMenu();
+      setNavInertAndHidden(false);
+      return;
+    }
+    setNavInertAndHidden(!document.body.classList.contains("isNavOpen"));
+  }
+
+  mq.addEventListener("change", syncBreakpoint);
+  window.addEventListener("load", syncBreakpoint);
+  syncBreakpoint();
+
+  toggle.addEventListener("click", () => {
+    if (!isMobileNav()) return;
+    if (document.body.classList.contains("isNavOpen")) {
+      closeMenu();
+      toggle.focus();
+    } else {
+      openMenu();
+    }
+  });
+
+  if (backdrop instanceof HTMLElement) {
+    backdrop.addEventListener("click", () => {
+      if (!isMobileNav()) return;
+      closeMenu();
+      toggle.focus();
+    });
+  }
+
+  nav.addEventListener("click", (e) => {
+    if (!isMobileNav() || !document.body.classList.contains("isNavOpen")) return;
+    if (e.target instanceof Element && e.target.closest("a")) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!isMobileNav() || !document.body.classList.contains("isNavOpen")) return;
+    if (isModalOpen()) return;
+
+    if (e.key === "Escape") {
+      e.preventDefault();
+      closeMenu();
+      toggle.focus();
+      return;
+    }
+
+    if (e.key !== "Tab") return;
+    const focusables = getHeaderFocusTrapOrder().filter(
+      (el) => el instanceof HTMLElement && !el.hasAttribute("disabled") && el.offsetParent !== null
+    );
+    if (focusables.length < 2) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
     }
   });
 })();

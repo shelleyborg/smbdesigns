@@ -16,7 +16,27 @@
           <img class="brandMark" src="./images/logo.png" alt="SMB logo" />
         </a>
 
-        <nav class="nav" aria-label="Primary">
+        <button
+          class="navToggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primaryNav"
+          aria-label="Open menu"
+        >
+          <span class="navToggleLines" aria-hidden="true">
+            <span class="navToggleLine"></span>
+            <span class="navToggleLine"></span>
+            <span class="navToggleLine"></span>
+          </span>
+        </button>
+
+        <div
+          class="navBackdrop"
+          data-nav-backdrop
+          aria-hidden="true"
+        ></div>
+
+        <nav class="nav" id="primaryNav" aria-label="Primary">
           <a class="navLink" href="#home" data-scroll>home</a>
           <a class="navLink" href="#about" data-scroll>about</a>
           <a class="navLink" href="#works" data-scroll>works</a>
@@ -29,7 +49,6 @@
       <section id="home" class="hero section">
         <div class="container heroGrid">
           <div class="heroCopy">
-            <p class="kicker">SHELLEY MAE BORG</p>
             <h1 class="display">
               SHELLEY<br />
               MAE BORG
@@ -48,6 +67,7 @@
 
           <div class="heroArt" aria-hidden="true">
             <div class="pixelMotif">
+              <!-- TODO: placeholder motif, NEEDS to be replaced with an actual image or SVG -->
               <img src="./images/logo.png" alt="" />
             </div>
             <div class="accentSquares accentSquaresBlue"></div>
@@ -66,15 +86,13 @@
               I combine structure and experimentation to create visuals that are clean,
               intentional and a little unexpected.
             </p>
-
-            <a class="textLink" href="#works" data-scroll>about me →</a>
           </div>
 
           <div class="aboutMedia">
             <div class="portraitPlaceholder" role="img" aria-label="Portrait placeholder"></div>
-            <div class="pixelOverlay" aria-hidden="true">
+            <!-- <div class="pixelOverlay" aria-hidden="true">
               <img src="./images/logo.png" alt="" />
-            </div>
+            </div> -->
           </div>
         </div>
       </section>
@@ -83,7 +101,7 @@
         <div class="container">
           <div class="sectionHeader">
             <h2 class="sectionTitle">WORKS</h2>
-            <a class="textLink" href="#works" data-scroll>view all works →</a>
+            <a class="textLink" href="./worksDone.html">view all works →</a>
           </div>
 
           <div class="worksGrid" aria-label="Work projects">
@@ -104,66 +122,6 @@
               <h3 class="workTitle">Design Pulse</h3>
               <p class="workMeta">editorial design</p>
             </article>
-
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbD" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Nature Forge</h3>
-              <p class="workMeta">branding</p>
-            </article>
-
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbE" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Plastic Paradise</h3>
-              <p class="workMeta">poster design</p>
-            </article>
-
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbF" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Abstract Motion</h3>
-              <p class="workMeta">digital art</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="quoteBand section" aria-label="Testimonial">
-        <div class="container quoteInner">
-          <blockquote class="quote">
-            shelley is a rare combination of aesthetic vision and technical skill.
-            her work is always thoughtful, original and executed with precision.
-          </blockquote>
-          <div class="quoteByline">— studio malta</div>
-          <a class="quoteLink" href="#about" data-scroll>read more reviews →</a>
-        </div>
-      </section>
-
-      <section class="cta section" aria-label="Call to action">
-        <div class="container ctaGrid">
-          <h2 class="ctaTitle displaySmall">
-            LET’S CREATE<br />
-            SOMETHING<br />
-            TOGETHER.
-          </h2>
-
-          <div class="ctaDetails">
-            <div class="ctaRow">
-              <div class="ctaLabel">email me</div>
-              <div class="ctaValue">shelleymaeborg@gmail.com</div>
-            </div>
-            <div class="ctaRow">
-              <div class="ctaLabel">call me</div>
-              <div class="ctaValue">+356 77473173</div>
-            </div>
-            <div class="ctaRow">
-              <div class="ctaLabel">socials</div>
-              <div class="ctaValue">@shelleymaeborg</div>
-            </div>
-          </div>
-
-          <div class="ctaMotif" aria-hidden="true">
-            <div class="pixelMotif pixelMotifSmall">
-              <img src="./images/logo.png" alt="" />
-            </div>
           </div>
         </div>
       </section>
@@ -173,7 +131,6 @@
       <div class="container footerInner">
         <div class="footerLeft">
           <img class="footerMark" src="./images/logo.png" alt="SMB logo" />
-          <div class="footerTagline">shell we design?</div>
         </div>
 
         <nav class="footerNav" aria-label="Footer">

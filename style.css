@@ -140,6 +140,89 @@ a {
   cursor: not-allowed;
 }
 
+/* Mobile burger Menu */
+.navToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin: 0;
+  margin-left: auto;
+  flex-shrink: 0;
+  border: 1px solid rgba(43, 43, 43, 0.12);
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  cursor: pointer;
+  position: relative;
+  z-index: 160;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.navToggle:hover {
+  border-color: rgba(240, 82, 35, 0.45);
+  background: rgba(255, 255, 255, 1);
+}
+
+.navToggle:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.navToggleLines {
+  width: 22px;
+  height: 16px;
+  position: relative;
+  display: block;
+  pointer-events: none;
+}
+
+.navToggleLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ink);
+  border-radius: 1px;
+  transition:
+    transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.25s ease,
+    top 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navToggleLine:nth-child(1) {
+  top: 0;
+}
+
+.navToggleLine:nth-child(2) {
+  top: 7px;
+}
+
+.navToggleLine:nth-child(3) {
+  top: 14px;
+}
+
+body.isNavOpen .navToggleLine:nth-child(1) {
+  top: 7px;
+  transform: rotate(45deg);
+}
+
+body.isNavOpen .navToggleLine:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+body.isNavOpen .navToggleLine:nth-child(3) {
+  top: 7px;
+  transform: rotate(-45deg);
+}
+
+.navBackdrop {
+  display: none;
+}
+
 /* Typography */
 .kicker {
   margin: 0 0 12px;
@@ -625,34 +708,182 @@ body::before {
 }
 
 /* Tablet guardrails */
-
 @media (max-width: 768px) {
-  /* Tablet: reduce vertical rhythm */
+  /* Tablet: reduce vertical*/
   .section {
     padding: 52px 0;
   }
 
-  /* Tablet: header becomes flexible height */
-  .headerInner {
+  body.isNavOpen {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  body.isNavOpen .siteHeader {
+    z-index: 200;
+  }
+
+  .siteHeader .headerInner {
+    position: relative;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
     height: auto;
-    padding: 12px 0;
-    align-items: flex-start;
+    padding: 10px 0;
   }
 
   .brandMark {
     width: 48px;
   }
 
-  /* Tablet: nav wraps instead of overflowing */
-  .nav {
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 10px 14px;
-    font-size: 13px;
+  /* Burger + slide-over nav */
+  .navToggle {
+    display: inline-flex;
   }
 
-  .navLink {
-    padding: 6px 6px;
+  .navBackdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 140;
+    background: radial-gradient(circle at 80% 20%, rgba(251, 247, 190, 0.08), transparent 45%),
+      rgba(0, 0, 0, 0.52);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0.42s;
+  }
+
+  body.isNavOpen .navBackdrop {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: auto;
+    width: min(300px, 86vw);
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: calc(72px + 20px) 28px 32px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    line-height: 1.25;
+    background: var(--cream);
+    border-left: 1px solid rgba(43, 43, 43, 0.1);
+    box-shadow: -16px 0 48px rgba(0, 0, 0, 0.18);
+    z-index: 150;
+    transform: translateX(104%);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  body.isNavOpen .siteHeader .nav {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .siteHeader .nav .navLink {
+    padding: 14px 4px;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(12px);
+    transition:
+      opacity 0.35s ease,
+      transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 0s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(1) {
+    transition-delay: 0.07s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(2) {
+    transition-delay: 0.12s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(3) {
+    transition-delay: 0.17s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(4) {
+    transition-delay: 0.22s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(5) {
+    transition-delay: 0.26s;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:nth-child(6) {
+    transition-delay: 0.3s;
+  }
+
+  .siteHeader .nav .navLink::after {
+    bottom: 10px;
+    left: 4px;
+    right: auto;
+    width: 0;
+    height: 2px;
+    transform: none;
+    transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-origin: left;
+  }
+
+  .siteHeader .nav .navLink:hover::after,
+  .siteHeader .nav .navLink[aria-current="page"]::after {
+    width: 2.25rem;
+    transform: none;
+    transform-origin: left;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:hover::after,
+  body.isNavOpen .siteHeader .nav .navLink[aria-current="page"]::after {
+    width: 2.25rem;
+  }
+
+  body.isNavOpen .siteHeader .nav .navLink:focus-visible::after {
+    width: 2.25rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .navToggleLine,
+    .navBackdrop,
+    .siteHeader .nav,
+    .siteHeader .nav .navLink {
+      transition: none !important;
+    }
+
+    body.isNavOpen .siteHeader .nav .navLink {
+      transition-delay: 0s !important;
+      opacity: 1;
+      transform: none;
+    }
+
+    .siteHeader .nav .navLink {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .display {
@@ -987,7 +1218,7 @@ body::before {
   inset: 0;
   display: grid;
   place-items: center;
-  z-index: 120;
+  z-index: 260;
   opacity: 0;
   pointer-events: none;
   transition: opacity 220ms ease;
@@ -1034,8 +1265,244 @@ body::before {
   gap: 10px;
 }
 
+/* Works done portfolio page */
+.pageWorksDone .worksDoneHero {
+  background: var(--cream);
+  padding-top: 44px;
+}
+
+.worksDoneHeroInner {
+  max-width: min(560px, 100%);
+}
+
+.worksDoneEyebrow {
+  margin-bottom: 10px;
+}
+
+.worksDoneHeading {
+  margin: 0 0 14px;
+  font-size: clamp(32px, 4.6vw, 56px);
+  line-height: 0.95;
+  letter-spacing: var(--tracking-tight);
+  text-transform: lowercase;
+}
+
+.pageWorksDone .worksDoneIntro {
+  max-width: none;
+  margin-bottom: 12px;
+}
+
+.pageWorksDone .worksDoneIntroSecondary {
+  max-width: none;
+  margin-bottom: 0;
+  color: rgba(43, 43, 43, 0.72);
+  font-size: 13px;
+}
+
+.worksDoneGridSection {
+  padding-top: 8px;
+}
+
+.portfolioGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.portfolioCard {
+  cursor: pointer;
+  transition: transform 160ms ease;
+}
+
+@media (pointer: fine) {
+  .portfolioCard:hover {
+    transform: translateY(-2px);
+  }
+
+  .portfolioCard:hover .workThumb {
+    border-color: rgba(43, 43, 43, 0.22);
+  }
+}
+
+.portfolioCard:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 6px;
+}
+
+/*
+ * Work detail modal: dialog is position:fixed and centered with inset + margin:auto.
+ * (Grid/flex centering on a full-screen fixed layer was bottom-aligning in mobile emulators / some UAs.)
+ */
+.workDetailModal.modal {
+  display: block;
+  overflow: hidden;
+  overscroll-behavior: none;
+  box-sizing: border-box;
+}
+
+.workDetailModal {
+  z-index: 260;
+}
+
+#workDetailModal .workDetailModalDialog {
+  --workModalPadY: clamp(28px, 6vmin, 48px);
+  --workModalPadX: clamp(14px, 4vw, 24px);
+
+  position: fixed;
+  z-index: 261;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(760px, calc(100vw - var(--workModalPadX) * 2));
+  max-width: min(
+    760px,
+    calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - var(--workModalPadX) * 2)
+  );
+  min-width: 0;
+  max-height: min(92vh, 920px);
+  max-height: min(
+    calc(100svh - var(--workModalPadY) * 2),
+    calc(100dvh - var(--workModalPadY) * 2),
+    calc(100vh - var(--workModalPadY) * 2),
+    920px
+  );
+  height: fit-content;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+#workDetailModal .modalBackdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+
+.workDetailModalToolbar {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 14px 10px;
+  background: var(--cream);
+}
+
+.workDetailModalDialog .workDetailHero {
+  flex: 0 0 auto;
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  height: clamp(220px, 38vh, 440px);
+  min-height: clamp(220px, 38vh, 440px);
+  margin: 0;
+  margin-bottom: 0;
+}
+
+.workDetailBody {
+  flex: 1 1 auto;
+  padding: 22px 22px 26px;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.workDetailModalDialog .workDetailTitle,
+.workDetailModalDialog .workDetailMeta,
+.workDetailModalDialog .workDetailDesc {
+  max-width: 100%;
+}
+
+.workDetailModalDialog .modalDesc.workDetailDesc {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.workDetailTitle {
+  margin: 0;
+  font-size: clamp(22px, 3.2vw, 28px);
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+}
+
+.workDetailMeta {
+  margin: 8px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--orange);
+}
+
+.workDetailModalDialog .workDetailDesc {
+  margin-top: 14px;
+  max-width: 100%;
+}
+
 @media (max-width: 1100px) {
+  .portfolioGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .contactGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageWorksDone .worksDoneHero {
+    padding-top: 38px;
+  }
+
+  .workDetailModalDialog .workDetailHero {
+    height: clamp(200px, 34vh, 380px);
+    min-height: clamp(200px, 34vh, 380px);
+  }
+
+  .workDetailModalToolbar {
+    padding-inline: 12px;
+    padding-bottom: 8px;
+  }
+
+  .workDetailBody {
+    padding: 18px 18px 22px;
+  }
+
+  #workDetailModal .workDetailModalDialog {
+    --workModalPadX: clamp(12px, 4vw, 22px);
+    --workModalPadY: clamp(22px, 5vmin, 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .portfolioGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  #workDetailModal .workDetailModalDialog {
+    --workModalPadX: 12px;
+    --workModalPadY: 20px;
+  }
+
+  .workDetailModalDialog .workDetailHero {
+    width: 100%;
+    height: clamp(140px, 32vh, 320px);
+    height: clamp(140px, 32svh, 320px);
+    flex-shrink: 0;
+    min-width: 0;
+  }
+
+  .workDetailModalToolbar {
+    padding-top: 10px;
+    padding-inline: 14px;
+  }
+
+  .workDetailBody {
+    padding-left: 16px;
+    padding-right: 16px;
   }
 }
