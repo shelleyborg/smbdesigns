@@ -37,7 +37,7 @@ function getFocusableElements(container) {
     });
   }
 
-  const sectionIds = ["home", "about", "works"];
+  const sectionIds = ["home", "works", "contact-cta"];
   const navLinks = Array.from(document.querySelectorAll(".nav .navLink[data-scroll]")).filter((a) => {
     const href = a.getAttribute("href") || "";
     return sectionIds.some((id) => href === `#${id}`);
@@ -110,98 +110,102 @@ function getFocusableElements(container) {
     smoothScrollToId(id);
   });
 
-  // Works spotlight: homepage #works grid only (not portfolio page)
-  const grid = document.querySelector("#works .worksGrid");
-  if (!grid) return;
+})();
 
-  let activeCard = null;
+/* Gallery marquee — seamless continuous scroll */
+(() => {
+  const wrap = document.querySelector("[data-gallery-marquee]");
+  if (!wrap) return;
 
-  function setSpot(x, y) {
-    document.body.style.setProperty("--spot-x", `${Math.round(x)}px`);
-    document.body.style.setProperty("--spot-y", `${Math.round(y)}px`);
-  }
+  const track = wrap.querySelector(".galleryTrackAuto");
+  const sets = Array.from(wrap.querySelectorAll(".galleryTrackSet")).filter(
+    (el) => el instanceof HTMLElement
+  );
+  if (!(track instanceof HTMLElement) || sets.length < 2) return;
 
-  function activate(card, x, y) {
-    if (!(card instanceof HTMLElement)) return;
-
-    if (activeCard && activeCard !== card) activeCard.classList.remove("isSpotlit");
-    activeCard = card;
-    activeCard.classList.add("isSpotlit");
-
-    document.body.classList.add("spotlightOn");
-
-    if (typeof x === "number" && typeof y === "number") {
-      setSpot(x, y);
-      return;
-    }
-
-    const r = card.getBoundingClientRect();
-    setSpot(r.left + r.width / 2, r.top + r.height / 2);
-  }
-
-  function deactivate() {
-    document.body.classList.remove("spotlightOn");
-    if (activeCard) activeCard.classList.remove("isSpotlit");
-    activeCard = null;
-  }
-
-  const isCoarsePointer =
+  const prefersReducedMotion =
     typeof window !== "undefined" &&
     window.matchMedia &&
-    window.matchMedia("(pointer: coarse)").matches;
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (prefersReducedMotion) return;
 
-  if (isCoarsePointer) {
-    grid.addEventListener("pointerdown", (e) => {
-      const target = e.target instanceof Element ? e.target : null;
-      const card = target ? target.closest(".workCard") : null;
-      if (!(card instanceof HTMLElement)) return;
+  const speedPxPerSec = 52;
+  let offset = 0;
+  let loopWidth = 0;
+  let lastTime = 0;
+  let rafId = 0;
 
-      if (activeCard === card && document.body.classList.contains("spotlightOn")) {
-        deactivate();
-        return;
-      }
-
-      activate(card);
-    });
-
-    document.addEventListener("pointerdown", (e) => {
-      if (!document.body.classList.contains("spotlightOn")) return;
-      const target = e.target instanceof Element ? e.target : null;
-      if (!target) return;
-      if (target.closest("#works .worksGrid")) return;
-      deactivate();
-    });
-
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (document.body.classList.contains("spotlightOn")) deactivate();
-      },
-      { passive: true }
-    );
+  function measureLoopWidth() {
+    const first = sets[0];
+    const second = sets[1];
+    loopWidth = second.offsetLeft - first.offsetLeft;
+    if (loopWidth <= 0) loopWidth = first.offsetWidth + 20;
   }
 
-  grid.addEventListener("mousemove", (e) => {
-    const card = e.target instanceof Element ? e.target.closest(".workCard") : null;
-    if (!card) return;
-    activate(card, e.clientX, e.clientY);
+  function tick(time) {
+    if (!lastTime) lastTime = time;
+    const deltaSec = Math.min((time - lastTime) / 1000, 0.05);
+    lastTime = time;
+
+    offset += speedPxPerSec * deltaSec;
+    if (loopWidth > 0 && offset >= loopWidth) {
+      offset %= loopWidth;
+    }
+
+    track.style.transform = `translate3d(${-offset}px, 0, 0)`;
+    rafId = window.requestAnimationFrame(tick);
+  }
+
+  measureLoopWidth();
+  window.addEventListener("resize", measureLoopWidth);
+  window.addEventListener("load", measureLoopWidth);
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      window.cancelAnimationFrame(rafId);
+      lastTime = 0;
+    } else {
+      rafId = window.requestAnimationFrame(tick);
+    }
   });
 
-  grid.addEventListener("mouseleave", () => {
-    deactivate();
-  });
+  rafId = window.requestAnimationFrame(tick);
+})();
 
-  grid.addEventListener("focusin", (e) => {
-    const card = e.target instanceof Element ? e.target.closest(".workCard") : null;
-    if (!card) return;
-    activate(card);
-  });
+/* FAQ accordion */
+(() => {
+  const list = document.querySelector("[data-faq-list]");
+  if (!list) return;
 
-  grid.addEventListener("focusout", (e) => {
-    const next = e.relatedTarget instanceof Element ? e.relatedTarget : null;
-    if (next && grid.contains(next) && next.closest(".workCard")) return;
-    deactivate();
-  });
+  const triggers = Array.from(list.querySelectorAll(".faqQuestion")).filter(
+    (el) => el instanceof HTMLButtonElement
+  );
+  if (!triggers.length) return;
+
+  function closeItem(btn) {
+    const panelId = btn.getAttribute("aria-controls");
+    const panel = panelId ? document.getElementById(panelId) : null;
+    btn.setAttribute("aria-expanded", "false");
+    if (panel) panel.hidden = true;
+  }
+
+  function openItem(btn) {
+    const panelId = btn.getAttribute("aria-controls");
+    const panel = panelId ? document.getElementById(panelId) : null;
+    btn.setAttribute("aria-expanded", "true");
+    if (panel) panel.hidden = false;
+  }
+
+  for (const btn of triggers) {
+    btn.addEventListener("click", () => {
+      const isOpen = btn.getAttribute("aria-expanded") === "true";
+      for (const other of triggers) {
+        if (other !== btn) closeItem(other);
+      }
+      if (isOpen) closeItem(btn);
+      else openItem(btn);
+    });
+  }
 })();
 
 (() => {
@@ -335,6 +339,13 @@ function getFocusableElements(container) {
     for (const c of THUMB_CLASSES) el.classList.remove(c);
   }
 
+  function resetWorkHero() {
+    heroEl.innerHTML = "";
+    heroEl.className = "workDetailHero workThumb thumbA";
+    stripThumbClasses(heroEl);
+    heroEl.setAttribute("aria-hidden", "true");
+  }
+
   function openWorkModal(card) {
     if (!(card instanceof HTMLElement)) return;
 
@@ -342,12 +353,32 @@ function getFocusableElements(container) {
     const meta = card.getAttribute("data-work-meta") || "";
     const desc = card.getAttribute("data-work-desc") || "";
     const thumb = card.getAttribute("data-work-thumb") || "thumbA";
+    const embedUrl = card.getAttribute("data-work-embed");
 
     lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
-    heroEl.className = "workDetailHero workThumb";
+    heroEl.innerHTML = "";
     stripThumbClasses(heroEl);
-    if (THUMB_CLASSES.includes(thumb)) heroEl.classList.add(thumb);
+
+    if (embedUrl) {
+      heroEl.className = "workDetailHero workDetailHero--embed";
+      heroEl.removeAttribute("aria-hidden");
+
+      const iframe = document.createElement("iframe");
+      iframe.src = embedUrl;
+      iframe.title = title ? `${title} — interactive prototype` : "Interactive prototype";
+      iframe.setAttribute("frameborder", "0");
+      iframe.setAttribute("allowfullscreen", "");
+      iframe.setAttribute(
+        "sandbox",
+        "allow-same-origin allow-scripts allow-pointer-lock allow-forms allow-popups allow-popups-to-escape-sandbox"
+      );
+      heroEl.appendChild(iframe);
+    } else {
+      heroEl.className = "workDetailHero workThumb";
+      if (THUMB_CLASSES.includes(thumb)) heroEl.classList.add(thumb);
+      heroEl.setAttribute("aria-hidden", "true");
+    }
 
     titleEl.textContent = title;
     metaEl.textContent = meta;
@@ -369,6 +400,7 @@ function getFocusableElements(container) {
   function closeWorkModal() {
     modal.classList.remove("isOpen");
     modal.setAttribute("aria-hidden", "true");
+    resetWorkHero();
     if (lastFocused) lastFocused.focus();
     lastFocused = null;
   }

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Works — Shelley Mae Borg</title>
     <link rel="icon" type="image/x-icon" href="/images/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fragment+Mono:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body class="pageWorksDone">
@@ -30,15 +36,11 @@
           </span>
         </button>
 
-        <div
-          class="navBackdrop"
-          data-nav-backdrop
-          aria-hidden="true"
-        ></div>
+        <div class="navBackdrop" data-nav-backdrop aria-hidden="true"></div>
 
         <nav class="nav" id="primaryNav" aria-label="Primary">
           <a class="navLink" href="./index.html#home">home</a>
-          <a class="navLink" href="./index.html#about">about</a>
+          <a class="navLink" href="./about.html">about</a>
           <a class="navLink" href="./worksDone.html" aria-current="page">works</a>
           <a class="navLink" href="./contact.html">contact</a>
         </nav>
@@ -48,115 +50,148 @@
     <main id="worksDoneMain">
       <section class="worksDoneHero section" aria-labelledby="worksDoneHeading">
         <div class="container worksDoneHeroInner">
-          <p class="eyebrow worksDoneEyebrow">
-            <span class="eyebrowMark" aria-hidden="true"></span>
-            portfolio
-          </p>
-          <h1 class="worksDoneHeading" id="worksDoneHeading">selected works</h1>
-          <p class="bodyText worksDoneIntro">
-            A cross-section of branding, editorial and digital-led pieces with bold typography, restrained
-            palettes and print-aware craft.
+          <h1 class="sectionTitle worksDoneHeading" id="worksDoneHeading">Selected case studies</h1>
+          <p class="sectionLead worksDoneIntro">
+            Crafting visual stories with emotion, rhythm and culture — from branding to editorial.
           </p>
         </div>
       </section>
 
-      <section class="worksDoneGridSection section" aria-label="Portfolio projects">
+      <section class="worksDoneGridSection section caseStudies" aria-label="Portfolio projects" style="padding-bottom: 30px;">
         <div class="container">
-          <div class="portfolioGrid">
+          <div class="caseGrid portfolioGrid">
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Vision Forge. Open detail view."
+              aria-label="Council of Europe. Open detail view."
               data-work-thumb="thumbA"
-              data-work-title="Vision Forge"
-              data-work-meta="branding · visual identity"
-              data-work-desc="Naming architecture, logotype refinement and collateral templates for an independent studio. Anchored around a restrained two-colour palette and generous negative space — built to stay legible on screen print and stitched merch."
+              data-work-title="Council of Europe"
+              data-work-meta="branding"
+              data-work-desc="Identity and collateral for an institutional brief — restrained palette, generous negative space, and typography built for clarity across print and screen."
             >
-              <div class="workThumb thumbA" aria-hidden="true"></div>
-              <h3 class="workTitle">Council of Europe</h3>
-              <p class="workMeta">branding</p>
+              <div class="caseCardMedia thumbA" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Council of Europe</h2>
+                <p class="caseCardDesc">
+                  Identity and collateral for an institutional brief — restrained palette, generous
+                  negative space, and typography built for clarity across print and screen.
+                </p>
+                <span class="caseCardTag">Branding</span>
+              </div>
             </article>
 
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Flow Create. Open detail view."
+              aria-label="Gen Alpha!. Open detail view."
               data-work-thumb="thumbB"
-              data-work-title="Flow Create"
-              data-work-meta="digital experience · UI art direction"
-              data-work-desc="Campaign landing system with modular typography and motion cues. Typography scales from editorial calm to kinetic hooks for social cut-downs — all within a coherent grid rhythm and WCAG-conscious contrast."
+              data-work-title="Gen Alpha!"
+              data-work-meta="poster collection"
+              data-work-desc="A poster collection exploring generational mood through collage, abrasive type and high-contrast colour — made to read fast on walls and feeds alike."
             >
-              <div class="workThumb thumbB" aria-hidden="true"></div>
-              <h3 class="workTitle">Gen Alpha!</h3>
-              <p class="workMeta">poster collection</p>
+              <div class="caseCardMedia thumbB" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Gen Alpha!</h2>
+                <p class="caseCardDesc">
+                  A poster collection exploring generational mood through collage, abrasive type and
+                  high-contrast colour — made to read fast on walls and feeds alike.
+                </p>
+                <span class="caseCardTag">Poster collection</span>
+              </div>
             </article>
 
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Design Pulse. Open detail view."
+              aria-label="Dezine. Open detail view."
               data-work-thumb="thumbC"
-              data-work-title="Design Pulse"
-              data-work-meta="editorial · publication design"
-              data-work-desc="A typographic-forward magazine spread pairing sharp hierarchy with tactile paper stocks. Folios, pull quotes and image captions share a quiet grid language so imagery can breathe across long reads."
+              data-work-title="Dezine"
+              data-work-meta="editorial design"
+              data-work-desc="Editorial spreads pairing sharp hierarchy with tactile pacing — folios and pull quotes share a quiet grid so imagery can breathe across long reads."
             >
-              <div class="workThumb thumbC" aria-hidden="true"></div>
-              <h3 class="workTitle">Dezine</h3>
-              <p class="workMeta">editorial design</p>
+              <div class="caseCardMedia thumbC" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Dezine</h2>
+                <p class="caseCardDesc">
+                  Editorial spreads pairing sharp hierarchy with tactile pacing — folios and pull
+                  quotes share a quiet grid so imagery can breathe across long reads.
+                </p>
+                <span class="caseCardTag">Editorial design</span>
+              </div>
             </article>
 
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Nature Forge. Open detail view."
+              aria-label="Aura. Open detail view."
               data-work-thumb="thumbD"
-              data-work-title="Nature Forge"
-              data-work-meta="branding · packaging"
+              data-work-embed="https://xd.adobe.com/embed/21043e03-475a-41d1-8129-f05d9bd46f2a-7457/"
+              data-work-title="Aura"
+              data-work-meta="application"
               data-work-desc="Sustainable cues without cliché greenery: restrained iconography and texture-led labels for limited batch goods. Packaging lockups prioritise clarity on shelf scans and monochrome receipt printing."
             >
-              <div class="workThumb thumbD" aria-hidden="true"></div>
-              <h3 class="workTitle">Aura</h3>
-              <p class="workMeta">application</p>
+              <div class="caseCardMedia thumbD" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Aura</h2>
+                <p class="caseCardDesc">
+                  Sustainable cues without cliché greenery: restrained iconography and texture-led
+                  labels for limited batch goods. Packaging lockups prioritise clarity on shelf scans
+                  and monochrome receipt printing.
+                </p>
+                <span class="caseCardTag">Application</span>
+              </div>
             </article>
 
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Plastic Paradise. Open detail view."
+              aria-label="Eurovision. Open detail view."
               data-work-thumb="thumbE"
-              data-work-title="Plastic Paradise"
-              data-work-meta="poster · campaign narrative"
-              data-work-desc="High-contrast poster series critiquing throwaway aesthetics through collage and abrasive type. Imagery overlaps like refuse piles; typographic pacing rewards close reading without losing billboard legibility."
+              data-work-title="Eurovision"
+              data-work-meta="shirt design"
+              data-work-desc="High-contrast shirt design built for stage energy and crowd visibility — bold type and colour blocking that reads under lights and in motion."
             >
-              <div class="workThumb thumbE" aria-hidden="true"></div>
-              <h3 class="workTitle">Eurovision</h3>
-              <p class="workMeta">shirt design</p>
+              <div class="caseCardMedia thumbE" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Eurovision</h2>
+                <p class="caseCardDesc">
+                  High-contrast shirt design built for stage energy and crowd visibility — bold type
+                  and colour blocking that reads under lights and in motion.
+                </p>
+                <span class="caseCardTag">Shirt design</span>
+              </div>
             </article>
 
             <article
-              class="portfolioCard workCard"
+              class="caseCard portfolioCard"
               role="button"
               tabindex="0"
               aria-haspopup="dialog"
-              aria-label="Abstract Motion. Open detail view."
+              aria-label="Nostalġija man-Nanniet. Open detail view."
               data-work-thumb="thumbF"
-              data-work-title="Abstract Motion"
-              data-work-meta="digital art · stills"
+              data-work-title="Nostalġija man-Nanniet"
+              data-work-meta="photographic and film experience"
               data-work-desc="Fluid gradients and restrained geometry collide in a still series for ambient screensavers and social teasers. Each frame nests warm cream highlights against deep neutrals — animated-ready source files preserved for future loops."
             >
-              <div class="workThumb thumbF" aria-hidden="true"></div>
-              <h3 class="workTitle">Nostalġija man-Nanniet</h3>
-              <p class="workMeta">photographic and film experience</p>
+              <div class="caseCardMedia thumbF" aria-hidden="true"></div>
+              <div class="caseCardBody">
+                <h2 class="caseCardTitle">Nostalġija man-Nanniet</h2>
+                <p class="caseCardDesc">
+                  A photographic and film experience exploring memory and place — pacing, grain and
+                  colour grade work together to feel intimate and timeless.
+                </p>
+                <span class="caseCardTag">Photographic and film</span>
+              </div>
             </article>
           </div>
         </div>
@@ -165,21 +200,18 @@
 
     <footer class="siteFooter">
       <div class="container footerInner">
-        <div class="footerLeft">
-          <img class="footerMark" src="./images/logo.png" alt="SMB logo" />
+        <div class="footerBrand">
+          <img class="footerMark" src="./images/logo.png" alt="" />
         </div>
 
         <nav class="footerNav" aria-label="Footer">
           <a class="footerLink" href="./index.html#home">home</a>
-          <a class="footerLink" href="./index.html#about">about</a>
-          <a class="footerLink" href="./worksDone.html" aria-current="page">works</a>
+          <a class="footerLink" href="./about.html">about</a>
+          <a class="footerLink" href="./index.html#works">works</a>
           <a class="footerLink" href="./contact.html">contact</a>
         </nav>
 
-        <div class="footerRight">
-          <div class="footerLegal">© 2026 shelley mae borg</div>
-          <div class="footerLegal">all rights reserved.</div>
-        </div>
+        <p class="footerLegal">© 2026 Shelley Mae Borg. All rights reserved.</p>
       </div>
     </footer>
 

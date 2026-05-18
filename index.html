@@ -3,8 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Shelley Mae Borg</title>
+    <title>Shelley Mae Borg — Graphic Designer</title>
     <link rel="icon" type="image/x-icon" href="/images/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fragment+Mono:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./style.css" />
   </head>
   <body>
@@ -30,16 +36,12 @@
           </span>
         </button>
 
-        <div
-          class="navBackdrop"
-          data-nav-backdrop
-          aria-hidden="true"
-        ></div>
+        <div class="navBackdrop" data-nav-backdrop aria-hidden="true"></div>
 
         <nav class="nav" id="primaryNav" aria-label="Primary">
           <a class="navLink" href="#home" data-scroll>home</a>
-          <a class="navLink" href="#about" data-scroll>about</a>
-          <a class="navLink" href="#works" data-scroll>works</a>
+          <a class="navLink" href="./about.html">about</a>
+          <a class="navLink" href="./worksDone.html">works</a>
           <a class="navLink" href="./contact.html">contact</a>
         </nav>
       </div>
@@ -47,102 +49,103 @@
 
     <main>
       <section id="home" class="hero section">
-        <div class="container heroGrid">
+        <div class="container heroInner">
           <div class="heroCopy">
-            <h1 class="display">
-              SHELLEY<br />
-              MAE BORG
+            <h1 class="heroTitle">
+              <span class="heroTitleLine heroTitleName">Shelley Mae Borg</span>
+              <span class="heroTitleLine heroTitleAccent">Graphic designer.</span>
             </h1>
-            <p class="subtitle">graphic designer</p>
-
-            <p class="bodyText">
-              based in malta, creating bold, minimal and experimental visual identities and
+            <p class="heroLead">
+              Based in Malta, creating bold, minimal and experimental visual identities and
               digital experiences.
             </p>
-
-            <a class="ctaLink" href="#works" data-scroll>
-              view my work <span aria-hidden="true">↓</span>
-            </a>
-          </div>
-
-          <div class="heroArt" aria-hidden="true">
-            <div class="pixelMotif">
-              <!-- TODO: placeholder motif, NEEDS to be replaced with an actual image or SVG -->
-            </div>
-            <div class="accentSquares accentSquaresBlue"></div>
+            <a class="btnPrimary" href="./contact.html">Get in touch</a>
           </div>
         </div>
       </section>
 
-      <section id="about" class="about section">
-        <div class="container aboutGrid">
-          <div class="aboutCopy">
-            <p class="eyebrow">
-              <span class="eyebrowMark" aria-hidden="true"></span>
-              shell we design?
-            </p>
-            <p class="bodyText">
-              Hi! I'm Shelley Mae, a 24-year-old graphic design student with a passion for visual storytelling, music-inspired design and art.
-              I create emotionally-driven visuals that explore memory, mood, and culture, blending digital and physical design to tell meaningful stories.
-            </p>
-          </div>
-
-          <div class="aboutMedia">
-            <div class="portraitPlaceholder" role="img" aria-label="Portrait placeholder"></div>
-            <!-- <div class="pixelOverlay" aria-hidden="true">
-              <img src="./images/logo.png" alt="" />
-            </div> -->
-          </div>
-        </div>
-      </section>
-
-      <section id="works" class="works section">
+      <section id="works" class="galleryPeek section" aria-labelledby="galleryHeading">
         <div class="container">
-          <div class="sectionHeader">
-            <h2 class="sectionTitle">WORKS</h2>
-            <a class="textLink" href="./worksDone.html">view all works →</a>
+          <div class="sectionIntro">
+            <h2 class="sectionTitle" id="galleryHeading">Sneak peek of my works</h2>
+            <a class="textLink" href="./worksDone.html">View all works →</a>
           </div>
-
-          <div class="worksGrid" aria-label="Work projects">
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbA" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Council of Europe</h3>
-              <p class="workMeta">branding</p>
-            </article>
-
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbB" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Gen Alpha!</h3>
-              <p class="workMeta">poster collection</p>
-            </article>
-
-            <article class="workCard" tabindex="0">
-              <div class="workThumb thumbC" role="img" aria-label="Project thumbnail placeholder"></div>
-              <h3 class="workTitle">Dezine</h3>
-              <p class="workMeta">editorial design</p>
-            </article>
+        </div>
+        <div class="galleryTrackWrap" data-gallery-marquee>
+          <div class="galleryMarquee">
+            <div class="galleryTrack galleryTrackAuto">
+              <div class="galleryTrackSet" role="list" aria-label="Project previews">
+              <article class="gallerySlide" role="listitem">
+                <div class="gallerySlideMedia thumbA" role="img" aria-label="Council of Europe preview"></div>
+                <p class="gallerySlideCaption">Council of Europe</p>
+              </article>
+              <article class="gallerySlide" role="listitem">
+                <div class="gallerySlideMedia thumbB" role="img" aria-label="Gen Alpha preview"></div>
+                <p class="gallerySlideCaption">Gen Alpha!</p>
+              </article>
+              <article class="gallerySlide" role="listitem">
+                <div class="gallerySlideMedia thumbC" role="img" aria-label="Dezine preview"></div>
+                <p class="gallerySlideCaption">Dezine</p>
+              </article>
+              <article class="gallerySlide" role="listitem">
+                <div class="gallerySlideMedia thumbD" role="img" aria-label="Aura preview"></div>
+                <p class="gallerySlideCaption">Aura</p>
+              </article>
+              <article class="gallerySlide" role="listitem">
+                <div class="gallerySlideMedia thumbE" role="img" aria-label="Eurovision preview"></div>
+                <p class="gallerySlideCaption">Eurovision</p>
+              </article>
+              </div>
+              <div class="galleryTrackSet" aria-hidden="true">
+              <article class="gallerySlide" role="listitem" tabindex="-1">
+                <div class="gallerySlideMedia thumbA" role="img" aria-label="Council of Europe preview"></div>
+                <p class="gallerySlideCaption">Council of Europe</p>
+              </article>
+              <article class="gallerySlide" role="listitem" tabindex="-1">
+                <div class="gallerySlideMedia thumbB" role="img" aria-label="Gen Alpha preview"></div>
+                <p class="gallerySlideCaption">Gen Alpha!</p>
+              </article>
+              <article class="gallerySlide" role="listitem" tabindex="-1">
+                <div class="gallerySlideMedia thumbC" role="img" aria-label="Dezine preview"></div>
+                <p class="gallerySlideCaption">Dezine</p>
+              </article>
+              <article class="gallerySlide" role="listitem" tabindex="-1">
+                <div class="gallerySlideMedia thumbD" role="img" aria-label="Aura preview"></div>
+                <p class="gallerySlideCaption">Aura</p>
+              </article>
+              <article class="gallerySlide" role="listitem" tabindex="-1">
+                <div class="gallerySlideMedia thumbE" role="img" aria-label="Eurovision preview"></div>
+                <p class="gallerySlideCaption">Eurovision</p>
+              </article>
+              </div>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <section id="contact-cta" class="contactCta section" aria-labelledby="ctaHeading">
+        <div class="container contactCtaInner">
+          <h2 class="contactCtaTitle" id="ctaHeading">Ready to build something amazing?</h2>
+          <p class="contactCtaLead">I'd love to hear what you're dreaming up.</p>
+          <a class="btnPrimary btnPrimaryLight" href="./contact.html">Get in touch</a>
         </div>
       </section>
     </main>
 
     <footer class="siteFooter">
       <div class="container footerInner">
-        <div class="footerLeft">
-          <img class="footerMark" src="./images/logo.png" alt="SMB logo" />
+        <div class="footerBrand">
+          <img class="footerMark" src="./images/logo.png" alt="" />
         </div>
 
         <nav class="footerNav" aria-label="Footer">
           <a class="footerLink" href="#home" data-scroll>home</a>
-          <a class="footerLink" href="#about" data-scroll>about</a>
-          <a class="footerLink" href="#works" data-scroll>works</a>
+          <a class="footerLink" href="./about.html">about</a>
+          <a class="footerLink" href="./worksDone.html">works</a>
           <a class="footerLink" href="./contact.html">contact</a>
         </nav>
 
-        <div class="footerRight">
-          <div class="footerLegal">© 2026 shelley mae borg</div>
-          <div class="footerLegal">all rights reserved.</div>
-        </div>
+        <p class="footerLegal">© 2026 Shelley Mae Borg. All rights reserved.</p>
       </div>
     </footer>
 

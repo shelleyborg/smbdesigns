@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Shelley Mae Borg</title>
+    <link rel="icon" type="image/x-icon" href="/images/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fragment+Mono:ital@0;1&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="pageAbout">
+    <a class="skipLink" href="#about">Skip to content</a>
+
+    <header class="siteHeader">
+      <div class="container headerInner">
+        <a class="brand" href="./index.html">
+          <img class="brandMark" src="./images/logo.png" alt="SMB logo" />
+        </a>
+
+        <button
+          class="navToggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="primaryNav"
+          aria-label="Open menu"
+        >
+          <span class="navToggleLines" aria-hidden="true">
+            <span class="navToggleLine"></span>
+            <span class="navToggleLine"></span>
+            <span class="navToggleLine"></span>
+          </span>
+        </button>
+
+        <div class="navBackdrop" data-nav-backdrop aria-hidden="true"></div>
+
+        <nav class="nav" id="primaryNav" aria-label="Primary">
+          <a class="navLink" href="./index.html#home">home</a>
+          <a class="navLink" href="./about.html" aria-current="page">about</a>
+          <a class="navLink" href="./worksDone.html">works</a>
+          <a class="navLink" href="./contact.html">contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="aboutMain">
+      <section id="about" class="about section" aria-labelledby="aboutHeading">
+        <div class="container aboutGrid">
+          <div class="aboutCopy">
+            <p class="sectionEyebrow">Behind the canvas</p>
+            <h1 class="sectionTitle" id="aboutHeading">Meet the designer</h1>
+            <p class="bodyText">
+              Hi! I'm Shelley Mae, a 24-year-old graphic design student. I create emotionally-driven
+              visuals that explore memory, mood, and culture, blending digital and physical design to
+              tell meaningful stories.
+            </p>
+            <ul class="chipList" aria-label="Interests">
+              <li class="chip">Branding</li>
+              <li class="chip">Malta-based</li>
+              <li class="chip">Print &amp; digital</li>
+            </ul>
+          </div>
+
+          <div class="aboutMedia">
+            <!-- Replace portraitPlaceholder with final photo when available -->
+            <div class="aboutPortrait portraitPlaceholder" role="img" aria-label="Portrait of Shelley Mae Borg"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="siteFooter">
+      <div class="container footerInner">
+        <div class="footerBrand">
+          <img class="footerMark" src="./images/logo.png" alt="" />
+        </div>
+
+        <nav class="footerNav" aria-label="Footer">
+          <a class="footerLink" href="./index.html#home">home</a>
+          <a class="footerLink" href="./about.html" aria-current="page">about</a>
+          <a class="footerLink" href="./worksDone.html">works</a>
+          <a class="footerLink" href="./contact.html">contact</a>
+        </nav>
+
+        <p class="footerLegal">© 2026 Shelley Mae Borg. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="./functions.js"></script>
+  </body>
+</html>
