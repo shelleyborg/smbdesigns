@@ -319,7 +319,7 @@ function getFocusableElements(container) {
   });
 })();
 
-/* runtime Only JS for work detail modal */
+/* Work detail modal — images from data-work-images; carousel when multiple */
 
 (() => {
   const grid = document.querySelector(".portfolioGrid");
@@ -334,12 +334,430 @@ function getFocusableElements(container) {
   const THUMB_CLASSES = ["thumbA", "thumbB", "thumbC", "thumbD", "thumbE", "thumbF"];
 
   let lastFocused = null;
+  let carouselCleanup = null;
+  let flipbookCleanup = null;
+  let flipbookLoadId = 0;
+
+  const PDF_JS =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+  const PDF_WORKER =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  const PAGE_FLIP =
+    "https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js";
+
+  const FLIPBOOK_CACHE_PREFIX = "smb-flipbook:";
+  const FLIPBOOK_CACHE_VERSION = 1;
+  const FLIPBOOK_CACHE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+  const VIDEO_EXT = /\.(mov|mp4|webm|m4v|ogg)(\?.*)?$/i;
+
+  function isVideoSrc(src) {
+    return VIDEO_EXT.test(src);
+  }
+
+  function parseMediaList(raw) {
+    if (!raw) return [];
+    return raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+
+  /** Grid card thumbnail — data-work-images */
+  function parseWorkImages(card) {
+    return parseMediaList(card.getAttribute("data-work-images"));
+  }
+
+  /** Modal when clicked — data-work-detail-images (falls back to data-work-images) */
+  function parseWorkDetailImages(card) {
+    const detail = card.getAttribute("data-work-detail-images");
+    if (detail) return parseMediaList(detail);
+    return parseWorkImages(card);
+  }
+
+  function firstImageSrc(urls) {
+    return urls.find((src) => !isVideoSrc(src)) || urls[0] || "";
+  }
 
   function stripThumbClasses(el) {
     for (const c of THUMB_CLASSES) el.classList.remove(c);
   }
 
+  function setCardPreview(card) {
+    const media = card.querySelector(".caseCardMedia");
+    if (!(media instanceof HTMLElement)) return;
+
+    const images = parseWorkImages(card);
+    const preview = firstImageSrc(images);
+    if (preview && !isVideoSrc(preview)) {
+      media.style.backgroundImage = `url("${preview}")`;
+      media.style.backgroundSize = "cover";
+      media.style.backgroundPosition = "center";
+      stripThumbClasses(media);
+      return;
+    }
+
+    const thumb = card.getAttribute("data-work-thumb");
+    if (thumb && THUMB_CLASSES.includes(thumb)) {
+      stripThumbClasses(media);
+      media.classList.add(thumb);
+      media.style.backgroundImage = "";
+    }
+  }
+
+  function createWorkCarousel(mediaUrls, title) {
+    let index = 0;
+    const root = document.createElement("div");
+    root.className = "workDetailCarousel";
+
+    const viewport = document.createElement("div");
+    viewport.className = "workDetailCarouselViewport";
+
+    const track = document.createElement("div");
+    track.className = "workDetailCarouselTrack";
+
+    const slides = mediaUrls.map((src, i) => {
+      const slide = document.createElement("div");
+      slide.className = "workDetailCarouselSlide";
+      slide.setAttribute("role", "group");
+      slide.setAttribute("aria-roledescription", "slide");
+      const label = isVideoSrc(src) ? "video" : "image";
+      slide.setAttribute("aria-label", `${label} ${i + 1} of ${mediaUrls.length}`);
+
+      if (isVideoSrc(src)) {
+        const video = document.createElement("video");
+        video.src = encodeURI(src);
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = i === 0 ? "metadata" : "none";
+        video.setAttribute("aria-label", title ? `${title} — film` : "Project film");
+        slide.appendChild(video);
+      } else {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = title ? `${title} — image ${i + 1} of ${mediaUrls.length}` : "";
+        img.loading = i === 0 ? "eager" : "lazy";
+        slide.appendChild(img);
+      }
+
+      track.appendChild(slide);
+      return slide;
+    });
+
+    viewport.appendChild(track);
+
+    const prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "workDetailCarouselBtn workDetailCarouselBtn--prev";
+    prevBtn.setAttribute("aria-label", "Previous slide");
+    prevBtn.textContent = "‹";
+
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "workDetailCarouselBtn workDetailCarouselBtn--next";
+    nextBtn.setAttribute("aria-label", "Next slide");
+    nextBtn.textContent = "›";
+
+    const dots = document.createElement("div");
+    dots.className = "workDetailCarouselDots";
+    dots.setAttribute("role", "tablist");
+    dots.setAttribute("aria-label", "Choose slide");
+
+    const dotButtons = mediaUrls.map((src, i) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "workDetailCarouselDot";
+      dot.setAttribute("role", "tab");
+      dot.setAttribute(
+        "aria-label",
+        isVideoSrc(src) ? `Video ${i + 1}` : `Image ${i + 1}`
+      );
+      dot.setAttribute("aria-selected", i === 0 ? "true" : "false");
+      dots.appendChild(dot);
+      return dot;
+    });
+
+    function pauseVideos() {
+      for (const video of root.querySelectorAll("video")) {
+        if (video instanceof HTMLVideoElement) video.pause();
+      }
+    }
+
+    function goTo(nextIndex) {
+      pauseVideos();
+      index = (nextIndex + mediaUrls.length) % mediaUrls.length;
+      track.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+      for (let i = 0; i < slides.length; i++) {
+        const active = i === index;
+        slides[i].classList.toggle("isActive", active);
+        dotButtons[i].setAttribute("aria-selected", active ? "true" : "false");
+        dotButtons[i].classList.toggle("isActive", active);
+      }
+    }
+
+    prevBtn.addEventListener("click", () => goTo(index - 1));
+    nextBtn.addEventListener("click", () => goTo(index + 1));
+    dotButtons.forEach((dot, i) => dot.addEventListener("click", () => goTo(i)));
+
+    const onKeydown = (e) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        goTo(index - 1);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        goTo(index + 1);
+      }
+    };
+    root.addEventListener("keydown", onKeydown);
+
+    root.append(viewport, prevBtn, nextBtn, dots);
+    goTo(0);
+
+    return {
+      el: root,
+      cleanup() {
+        pauseVideos();
+        root.removeEventListener("keydown", onKeydown);
+      },
+    };
+  }
+
+  function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector(`script[src="${src}"]`);
+      if (existing) {
+        if (existing.dataset.loaded === "true") resolve();
+        else existing.addEventListener("load", () => resolve(), { once: true });
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = src;
+      script.async = true;
+      script.addEventListener("load", () => {
+        script.dataset.loaded = "true";
+        resolve();
+      });
+      script.addEventListener("error", () => reject(new Error(`Failed to load ${src}`)));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function ensureFlipbookLibs() {
+    await loadScriptOnce(PDF_JS);
+    await loadScriptOnce(PAGE_FLIP);
+    if (window.pdfjsLib) {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER;
+    }
+  }
+
+  function flipbookCacheKey(pdfUrl) {
+    return `${FLIPBOOK_CACHE_PREFIX}v${FLIPBOOK_CACHE_VERSION}:${pdfUrl}`;
+  }
+
+  function readFlipbookCache(pdfUrl) {
+    try {
+      const key = flipbookCacheKey(pdfUrl);
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+
+      const data = JSON.parse(raw);
+      const expired =
+        !data?.savedAt || Date.now() - data.savedAt > FLIPBOOK_CACHE_MAX_AGE_MS;
+      const invalid =
+        !Array.isArray(data?.pageImages) || !data.pageImages.length;
+
+      if (expired || invalid) {
+        localStorage.removeItem(key);
+        return null;
+      }
+
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  function clearOldFlipbookCaches(keepKey) {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(FLIPBOOK_CACHE_PREFIX) && key !== keepKey) {
+        keys.push(key);
+      }
+    }
+    for (const key of keys) localStorage.removeItem(key);
+  }
+
+  function writeFlipbookCache(pdfUrl, payload) {
+    const key = flipbookCacheKey(pdfUrl);
+    const entry = {
+      pdfUrl,
+      pageImages: payload.pageImages,
+      bookWidth: payload.bookWidth,
+      bookHeight: payload.bookHeight,
+      pageCount: payload.pageCount,
+      savedAt: Date.now(),
+    };
+
+    try {
+      localStorage.setItem(key, JSON.stringify(entry));
+      return true;
+    } catch (err) {
+      if (err?.name !== "QuotaExceededError") return false;
+      clearOldFlipbookCaches(key);
+      try {
+        localStorage.setItem(key, JSON.stringify(entry));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  function mountPdfFlipbook(pageImages, bookWidth, bookHeight) {
+    const PageFlip = window.St?.PageFlip || window.PageFlip;
+    if (!PageFlip) {
+      throw new Error("Flipbook library failed to load");
+    }
+
+    const root = document.createElement("div");
+    root.className = "workPdfFlipbook";
+
+    const hint = document.createElement("p");
+    hint.className = "workPdfFlipbookHint";
+    hint.textContent = "Drag a page corner or click the edges to flip.";
+
+    const bookEl = document.createElement("div");
+    bookEl.className = "workPdfFlipbookBook";
+    root.append(hint, bookEl);
+
+    const pageFlip = new PageFlip(bookEl, {
+      width: bookWidth,
+      height: bookHeight,
+      size: "stretch",
+      minWidth: 280,
+      maxWidth: 720,
+      minHeight: 360,
+      maxHeight: 900,
+      showCover: true,
+      mobileScrollSupport: false,
+      usePortrait: true,
+    });
+
+    pageFlip.loadFromImages(pageImages);
+
+    return {
+      el: root,
+      cleanup() {
+        try {
+          pageFlip.destroy();
+        } catch {
+          /* already destroyed */
+        }
+      },
+    };
+  }
+
+  async function renderPdfToImages(pdfUrl, onProgress) {
+    const { pdfjsLib } = window;
+    if (!pdfjsLib) throw new Error("PDF.js failed to load");
+
+    const pdf = await pdfjsLib.getDocument(encodeURI(pdfUrl)).promise;
+    const pageImages = [];
+    let bookWidth = 420;
+    let bookHeight = 594;
+
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      if (onProgress) onProgress(`Rendering page ${pageNum} of ${pdf.numPages}…`);
+      const page = await pdf.getPage(pageNum);
+      const viewport = page.getViewport({ scale: 1.35 });
+      if (pageNum === 1) {
+        bookWidth = Math.round(Math.min(viewport.width, 520));
+        bookHeight = Math.round(Math.min(viewport.height, 720));
+      }
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) continue;
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: context, viewport }).promise;
+      pageImages.push(canvas.toDataURL("image/jpeg", 0.85));
+    }
+
+    return { pageImages, bookWidth, bookHeight, pageCount: pdf.numPages };
+  }
+
+  async function createPdfFlipbook(pdfUrl, title, onProgress) {
+    await ensureFlipbookLibs();
+
+    const cached = readFlipbookCache(pdfUrl);
+    if (cached) {
+      if (onProgress) onProgress("Loading flipbook from cache…");
+      return mountPdfFlipbook(cached.pageImages, cached.bookWidth, cached.bookHeight);
+    }
+
+    const rendered = await renderPdfToImages(pdfUrl, onProgress);
+    writeFlipbookCache(pdfUrl, rendered);
+
+    return mountPdfFlipbook(
+      rendered.pageImages,
+      rendered.bookWidth,
+      rendered.bookHeight
+    );
+  }
+
+  function openPdfFlipbookInHero(pdfUrl, title) {
+    const loadId = ++flipbookLoadId;
+
+    heroEl.className = "workDetailHero workDetailHero--flipbook";
+    heroEl.removeAttribute("aria-hidden");
+    heroEl.innerHTML = "";
+
+    const loading = document.createElement("p");
+    loading.className = "workPdfFlipbookLoading";
+    loading.textContent = "Loading flipbook…";
+    heroEl.appendChild(loading);
+
+    createPdfFlipbook(pdfUrl, title, (message) => {
+      if (loadId !== flipbookLoadId) return;
+      loading.textContent = message;
+    })
+      .then((flipbook) => {
+        if (loadId !== flipbookLoadId) {
+          flipbook.cleanup();
+          return;
+        }
+        heroEl.innerHTML = "";
+        heroEl.appendChild(flipbook.el);
+        flipbookCleanup = flipbook.cleanup;
+      })
+      .catch(() => {
+        if (loadId !== flipbookLoadId) return;
+        heroEl.innerHTML = "";
+        const err = document.createElement("p");
+        err.className = "workPdfFlipbookError";
+        err.textContent =
+          "Could not load the flipbook. Check your connection, or open the PDF directly.";
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.className = "workPdfFlipbookLink";
+        link.textContent = "Open PDF in new tab";
+        heroEl.append(err, link);
+      });
+  }
+
   function resetWorkHero() {
+    flipbookLoadId += 1;
+    if (flipbookCleanup) {
+      flipbookCleanup();
+      flipbookCleanup = null;
+    }
+    if (carouselCleanup) {
+      carouselCleanup();
+      carouselCleanup = null;
+    }
     heroEl.innerHTML = "";
     heroEl.className = "workDetailHero workThumb thumbA";
     stripThumbClasses(heroEl);
@@ -354,11 +772,17 @@ function getFocusableElements(container) {
     const desc = card.getAttribute("data-work-desc") || "";
     const thumb = card.getAttribute("data-work-thumb") || "thumbA";
     const embedUrl = card.getAttribute("data-work-embed");
+    const pdfUrl = card.getAttribute("data-work-pdf");
+    const images = parseWorkDetailImages(card);
 
     lastFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     heroEl.innerHTML = "";
     stripThumbClasses(heroEl);
+    if (carouselCleanup) {
+      carouselCleanup();
+      carouselCleanup = null;
+    }
 
     if (embedUrl) {
       heroEl.className = "workDetailHero workDetailHero--embed";
@@ -374,6 +798,31 @@ function getFocusableElements(container) {
         "allow-same-origin allow-scripts allow-pointer-lock allow-forms allow-popups allow-popups-to-escape-sandbox"
       );
       heroEl.appendChild(iframe);
+    } else if (pdfUrl) {
+      openPdfFlipbookInHero(pdfUrl, title);
+    } else if (images.length > 1 && images.some(isVideoSrc)) {
+      heroEl.className = "workDetailHero workDetailHero--carousel";
+      heroEl.removeAttribute("aria-hidden");
+      const carousel = createWorkCarousel(images, title);
+      heroEl.appendChild(carousel.el);
+      carouselCleanup = carousel.cleanup;
+    } else if (images.length >= 1) {
+      const src = firstImageSrc(images);
+      heroEl.className = "workDetailHero workDetailHero--image";
+      heroEl.removeAttribute("aria-hidden");
+      if (isVideoSrc(src)) {
+        const video = document.createElement("video");
+        video.src = encodeURI(src);
+        video.controls = true;
+        video.playsInline = true;
+        video.setAttribute("aria-label", title ? `${title} — film` : "Project film");
+        heroEl.appendChild(video);
+      } else {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = title || "Project image";
+        heroEl.appendChild(img);
+      }
     } else {
       heroEl.className = "workDetailHero workThumb";
       if (THUMB_CLASSES.includes(thumb)) heroEl.classList.add(thumb);
@@ -403,6 +852,10 @@ function getFocusableElements(container) {
     resetWorkHero();
     if (lastFocused) lastFocused.focus();
     lastFocused = null;
+  }
+
+  for (const card of grid.querySelectorAll(".portfolioCard")) {
+    if (card instanceof HTMLElement) setCardPreview(card);
   }
 
   grid.addEventListener("click", (e) => {

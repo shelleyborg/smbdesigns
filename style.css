@@ -345,7 +345,7 @@ body.isNavOpen .navToggleLine:nth-child(3) {
   gap: 8px;
   padding: 14px 24px;
   border-radius: 999px;
-  background: var(--ink);
+  background: var(--orange);
   color: var(--white);
   font-family: var(--font-mono);
   font-size: 12px;
@@ -355,7 +355,8 @@ body.isNavOpen .navToggleLine:nth-child(3) {
 }
 
 .btnPrimary:hover {
-  background: #2a2a2a;
+  background: var(--orange);
+  color: var(--white);
   transform: translateY(-1px);
 }
 
@@ -365,12 +366,13 @@ body.isNavOpen .navToggleLine:nth-child(3) {
 }
 
 .btnPrimaryLight {
-  background: var(--white);
-  color: var(--ink);
+  background: var(--orange);
+  color: var(--white);
 }
 
 .btnPrimaryLight:hover {
-  background: #f0ebe4;
+  background: var(--white);
+  color: var(--orange);
 }
 
 /* Hero */
@@ -393,7 +395,10 @@ body.isNavOpen .navToggleLine:nth-child(3) {
   font-weight: 400;
   line-height: 1.20;
   letter-spacing: -0.03em;
+  color: #f05223;
 }
+
+.btnPrimary
 
 .heroTitleLine {
   display: block;
@@ -405,7 +410,7 @@ body.isNavOpen .navToggleLine:nth-child(3) {
 
 .heroTitleAccent {
   font-style: italic;
-  color: var(--ink-muted);
+  color: inherit;
 }
 
 .heroLead {
@@ -509,6 +514,13 @@ body.isNavOpen .navToggleLine:nth-child(3) {
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   overflow: hidden;
+}
+
+.gallerySlideMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .gallerySlideCaption {
@@ -626,7 +638,8 @@ body.isNavOpen .navToggleLine:nth-child(3) {
   padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--orange);
+  color: var(--white);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
@@ -813,28 +826,34 @@ body.isNavOpen .navToggleLine:nth-child(3) {
 }
 
 .thumbA {
-  background: radial-gradient(circle at 20% 30%, rgba(240, 82, 35, 0.25), transparent 55%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/COE-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .thumbB {
-  background: radial-gradient(circle at 60% 40%, rgba(132, 187, 230, 0.35), transparent 55%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/Gen Alpha-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .thumbC {
-  background: radial-gradient(circle at 30% 60%, rgba(251, 247, 190, 1), rgba(251, 247, 190, 0) 60%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/Dezine-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .thumbD {
-  background: radial-gradient(circle at 80% 40%, rgba(240, 82, 35, 0.18), transparent 55%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/Aura-Space-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .thumbE {
-  background: radial-gradient(circle at 40% 30%, rgba(132, 187, 230, 0.25), transparent 55%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/Eurovision-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 .thumbF {
-  background: radial-gradient(circle at 50% 60%, rgba(240, 82, 35, 0.22), transparent 55%),
-    linear-gradient(135deg, rgba(43, 43, 43, 0.06), rgba(43, 43, 43, 0));
+  background-image: url("./images/Nostalgija-1.jpg");
+  background-size: cover;
+  background-position: center;
 }
 
 .workTitle {
@@ -1674,6 +1693,179 @@ body.isNavOpen .navToggleLine:nth-child(3) {
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.workDetailHero--image {
+  padding: 0;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.workDetailHero--image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.workDetailHero--flipbook {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.workPdfFlipbook {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  gap: 10px;
+}
+
+.workPdfFlipbookHint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--ink-muted);
+}
+
+.workPdfFlipbookBook {
+  flex: 1 1 auto;
+  width: min(100%, 720px);
+  min-height: 0;
+}
+
+.workPdfFlipbookLoading,
+.workPdfFlipbookError {
+  margin: 0;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-muted);
+}
+
+.workPdfFlipbookLink {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--orange);
+}
+
+.workDetailHero--carousel {
+  position: relative;
+  padding: 0;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+.workDetailCarousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.workDetailCarouselViewport {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.workDetailCarouselTrack {
+  display: flex;
+  height: 100%;
+  transition: transform 320ms ease;
+}
+
+.workDetailCarouselSlide {
+  flex: 0 0 100%;
+  height: 100%;
+}
+
+.workDetailCarouselSlide img,
+.workDetailCarouselSlide video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.workDetailCarouselSlide video {
+  background: #141414;
+}
+
+.workDetailHero--image video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #141414;
+}
+
+.workDetailCarouselBtn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.workDetailCarouselBtn:hover {
+  background: var(--white);
+  border-color: var(--ink-muted);
+}
+
+.workDetailCarouselBtn--prev {
+  left: 14px;
+}
+
+.workDetailCarouselBtn--next {
+  right: 14px;
+}
+
+.workDetailCarouselDots {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  transform: translateX(-50%);
+}
+
+.workDetailCarouselDot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(43, 43, 43, 0.25);
+  cursor: pointer;
+}
+
+.workDetailCarouselDot.isActive {
+  background: var(--orange);
+}
+
+.caseCardMedia {
+  background-size: cover;
+  background-position: center;
 }
 
 .workDetailBody {
