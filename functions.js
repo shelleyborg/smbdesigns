@@ -635,10 +635,10 @@ function getFocusableElements(container) {
       width: bookWidth,
       height: bookHeight,
       size: "stretch",
-      minWidth: 280,
-      maxWidth: 720,
-      minHeight: 360,
-      maxHeight: 900,
+      minWidth: 260,
+      maxWidth: 560,
+      minHeight: 320,
+      maxHeight: 640,
       showCover: true,
       mobileScrollSupport: false,
       usePortrait: true,
@@ -670,10 +670,10 @@ function getFocusableElements(container) {
     for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
       if (onProgress) onProgress(`Rendering page ${pageNum} of ${pdf.numPages}…`);
       const page = await pdf.getPage(pageNum);
-      const viewport = page.getViewport({ scale: 1.35 });
+      const viewport = page.getViewport({ scale: 1.2 });
       if (pageNum === 1) {
-        bookWidth = Math.round(Math.min(viewport.width, 520));
-        bookHeight = Math.round(Math.min(viewport.height, 720));
+        bookWidth = Math.round(Math.min(viewport.width, 480));
+        bookHeight = Math.round(Math.min(viewport.height, 640));
       }
       const canvas = document.createElement("canvas");
       const context = canvas.getContext("2d");
